@@ -1760,9 +1760,18 @@ str.integer64 <- function(object
   invisible()
 }
 
-"[.integer64" <- function(x,...){
+"[.integer64" <- function(x, i, j, ...){
   cl <- oldClass(x)
   ret <- NextMethod()
+  if (class(i) == "character") {
+    na_idx <- union(which(!(i %in% names(x))), which(is.na(i)))
+  }else if (class(i) == "logical"){
+    i <- i[is.na(i) | i]
+    na_idx <- rep(is.na(i), length.out=length(ret))
+  }else{
+    na_idx <- is.na(i)
+  }
+  ret[na_idx] <- NA_integer64_
   oldClass(ret) <- cl
   remcache(ret)
   ret
