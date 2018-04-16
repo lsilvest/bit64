@@ -1572,37 +1572,56 @@ binattr <- function(e1,e2){
   d2 <- dim(e2)
   n1 <- length(e1)
   n2 <- length(e2)
+
+  ## this first part takes care of erroring out when the dimensions
+  ## are not compatible or warning if needed:
   if (length(d1)){
-    if (length(d2)){
+      if (length(d2)){
 	  if (!identical(dim(e1),dim(e2)))
-		stop("non-conformable arrays")
-	}else{
+              stop("non-conformable arrays")
+      }else{
 	  if (n2>n1)
-	    stop("length(e2) does not match dim(e1)")
+              stop("length(e2) does not match dim(e1)")
 	  if (n1%%n2)
-		warning("length(e1) not a multiple length(e2)")
-	}
-	attributes(e1)
+              warning("length(e1) not a multiple length(e2)")
+      }
   }else{
-    if (length(d2)){
+      if (length(d2)){
 	  if (n1>n2)
-	    stop("length(e1) does not match dim(n2)")
+              stop("length(e1) does not match dim(n2)")
 	  if (n2%%n1)
-		warning("length(e2) not a multiple length(e1)")
+              warning("length(e2) not a multiple length(e1)")
 	  attributes(e2)
-	}else{
+      }else{
 	  if (n1<n2){
-		if (n2%%n1)
-			warning("length(e2) not a multiple length(e1)")
+              if (n2%%n1)
+                  warning("length(e2) not a multiple length(e1)")
 	  }else{
-		if (n1%%n2)
-			warning("length(e1) not a multiple length(e2)")
+              if (n1%%n2)
+                  warning("length(e1) not a multiple length(e2)")
 	  }
-	  attributes(e1)
-	}
+      }
+  }
+
+  ## in this part we mimic R's algo for selecting attributes:
+  if (n1 > n2){
+      attributes(e1)
+  }else if (n2 > n1){
+      attributes(e2)
+  }else{
+      ## if same size take attribute from e1 if it exists, else from e2
+      ae1 <- attributes(e1)
+      ae2 <- attributes(e2)
+      nae1 <- names(attributes(e1))
+      nae2 <- names(attributes(e2))
+      allattr <- list()
+      for (a in union(nae1, nae2)) 
+          if (a %in% nae1)
+              allattr[[a]] <- ae1[[a]]
+          else
+              allattr[[a]] <- ae2[[a]]
   }
 }
-
 
 integer64 <- function(length=0){
   ret <- double(length)
