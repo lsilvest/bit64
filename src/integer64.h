@@ -100,6 +100,18 @@
 		  ret = llroundl(longret); \
 	}
 
+#define PRODREAL64(e1,e2,ret,naflag,longret) \
+	if (e2 == NA_INTEGER64 || ISNAN(e1)) \
+		ret = NA_INTEGER64; \
+	else { \
+                longret = (long double) e1 * e2;       \
+		if (isnan(longret) || longret>MAX_INTEGER64){ \
+		  naflag = TRUE; \
+		  ret = NA_INTEGER64; \
+		}else \
+		  ret = llroundl(longret); \
+	}
+
 #define POW64(e1,e2,ret,naflag, longret) \
 	if (e1 == NA_INTEGER64 || e2 == NA_INTEGER64) \
 		ret = NA_INTEGER64; \

@@ -337,6 +337,22 @@ SEXP times_integer64_double(SEXP e1_, SEXP e2_, SEXP ret_){
   return ret_;
 }
 
+SEXP times_double_integer64(SEXP e1_, SEXP e2_, SEXP ret_){
+  long long i, n = LENGTH(ret_);
+  long long i1, n1 = LENGTH(e1_);
+  long long i2, n2 = LENGTH(e2_);
+  double * e1 = REAL(e1_);
+  long long * e2 = (long long *) REAL(e2_);
+  long long * ret = (long long *) REAL(ret_);
+  long double longret;
+  Rboolean naflag = FALSE;
+	mod_iterate(n1, n2, i1, i2) {
+		PRODREAL64(e1[i1],e2[i2],ret[i],naflag,longret)
+	}
+	if (naflag)warning(INTEGER64_OVERFLOW_WARNING);
+  return ret_;
+}
+
 SEXP power_integer64_integer64(SEXP e1_, SEXP e2_, SEXP ret_){
   long long i, n = LENGTH(ret_);
   long long i1, n1 = LENGTH(e1_);

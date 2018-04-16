@@ -104,6 +104,7 @@ extern SEXP sign_integer64(SEXP, SEXP);
 extern SEXP sqrt_integer64(SEXP, SEXP);
 extern SEXP sum_integer64(SEXP, SEXP, SEXP);
 extern SEXP times_integer64_double(SEXP, SEXP, SEXP);
+extern SEXP times_double_integer64(SEXP, SEXP, SEXP);
 extern SEXP times_integer64_integer64(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
