@@ -1049,13 +1049,14 @@
 #!   Methods to extract and replace parts of an integer64 vector.
 #! }
 #! \usage{
-#!  \method{[}{integer64}(x, \dots)
+#!  \method{[}{integer64}(x, i, \dots)
 #!  \method{[}{integer64}(x, \dots) <- value 
 #!  \method{[[}{integer64}(x, \dots)
 #!  \method{[[}{integer64}(x, \dots) <- value
 #! }
 #! \arguments{
 #!   \item{x}{ an atomic vector }
+#!   \item{i}{ indices specifying elements to extract }
 #!   \item{value}{ an atomic vector with values to be assigned }
 #!   \item{\dots}{ further arguments to the \code{\link{NextMethod}} }
 #! }
@@ -1760,18 +1761,20 @@ str.integer64 <- function(object
   invisible()
 }
 
-"[.integer64" <- function(x, i, j, ...){
+"[.integer64" <- function(x, i, ...){
   cl <- oldClass(x)
   ret <- NextMethod()
-  if (class(i) == "character") {
-    na_idx <- union(which(!(i %in% names(x))), which(is.na(i)))
-  }else if (class(i) == "logical"){
-    i <- i[is.na(i) | i]
-    na_idx <- rep(is.na(i), length.out=length(ret))
-  }else{
-    na_idx <- is.na(i)
+  if (!missing(i)){
+    if (class(i) == "character"){
+        na_idx <- union(which(!(i %in% names(x))), which(is.na(i)))
+    }else if (class(i) == "logical"){
+        i <- i[is.na(i) | i]
+        na_idx <- rep(is.na(i), length.out=length(ret))
+    }else{
+        na_idx <- is.na(i)
+    }
+    ret[na_idx] <- NA_integer64_
   }
-  ret[na_idx] <- NA_integer64_
   oldClass(ret) <- cl
   remcache(ret)
   ret
