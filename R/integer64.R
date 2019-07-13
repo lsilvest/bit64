@@ -300,6 +300,7 @@
 #!    \code{\link{quantile.integer64}} \tab \code{\link{quantile}} \tab (existing) values at specified percentiles (/s/o/so) \cr
 #!    \code{\link{median.integer64}} \tab \code{\link{median}} \tab (existing) value at percentile 0.5 (/s/o/so) \cr
 #!    \code{\link{summary.integer64}} \tab \code{\link{summary}} \tab  (/s/o/so) \cr
+#!    \code{\link{all.equal.integer64}} \tab \code{\link{all.equal}} \tab test if two objects are (nearly) equal (/s/o/so) \cr
 #!  \cr
 #!    \bold{helper functions} \tab \bold{see also}          \tab \bold{description} \cr
 #!    \code{\link{minusclass}} \tab \code{\link{minusclass}} \tab removing class attritbute \cr
@@ -1516,10 +1517,40 @@
 #! }
 
 
+#! \name{all.equal.integer64}
+#! \alias{all.equal.integer64}
+#! \title{
+#!    Test if two integer64 vectors
+#! }
+#! \description{
+#!   'all.equals(x,y ) is a utility to ompare integer64 objects 'x' and 'y' testing equality.
+#! }
+#! \usage{
+#! \method{all.equal}{integer64}(target, current)
+#! }
+#! \arguments{
+#!   \item{target}{ a vector of 'integer64' to be compared }
+#!   \item{current}{ a vector of 'integer64' to be compared against 'target' }
+#!   \item{\dots}{ further arguments }
+#! }
+#! \value{
+#!   Either ‘TRUE’ (‘NULL’ for ‘attr.all.equal’) or a vector of ‘mode’
+#!   ‘"character"’ describing the differences between ‘target’ and
+#!   ‘current’.
+#! }
+#! \author{
+#! Jens Oehlschlägel <Jens.Oehlschlaegel@truecluster.com>
+#! }
+#! \examples{
+#!   all.equal(as.integer64(1:10), as.integer64(0:9))
+#! }
+
+
 # if (!exists(":.default")){
 	# ":.default" <- get(":")
 	# ":" <- function(from,to)UseMethod(":")
 # }
+
 
 setOldClass("integer64")
 
@@ -2472,3 +2503,79 @@ is.vector.integer64 <- function(x, mode="any"){
     TRUE
 }
 
+
+all.equal.integer64  <- function (target, current, tolerance = sqrt(.Machine$double.eps), 
+                                  scale = NULL, countEQ = FALSE, formatFUN = function(err, 
+                                  what) format(err), ..., check.attributes = TRUE) 
+{
+  if (!is.numeric(tolerance)) 
+    stop("'tolerance' should be numeric")
+  if (!is.numeric(scale) && !is.null(scale)) 
+    stop("'scale' should be numeric or NULL")
+  if (!is.logical(check.attributes)) 
+    stop(gettextf("'%s' must be logical", "check.attributes"), 
+         domain = NA)
+  msg <- NULL
+  msg <- if (check.attributes) 
+           attr.all.equal(target, current, tolerance = tolerance, 
+                          scale = scale, ...)
+  if (data.class(target) != data.class(current)) {
+    msg <- c(msg, paste0("target is ", data.class(target), 
+                         ", current is ", data.class(current)))
+    return(msg)
+  }
+  lt <- length(target)
+  lc <- length(current)
+  cplx <- is.complex(target)
+  if (lt != lc) {
+    if (!is.null(msg)) 
+      msg <- msg[-grep("\\bLengths\\b", msg)]
+    msg <- c(msg, paste0(if (cplx) "Complex" else "Numeric", 
+                         ": lengths (", lt, ", ", lc, ") differ"))
+    return(msg)
+  }
+  out <- is.na(target)
+  if (any(out != is.na(current))) {
+    msg <- c(msg, paste("'is.NA' value mismatch:", sum(is.na(current)), 
+                        "in current", sum(out), "in target"))
+    return(msg)
+  }
+  out <- out | target == current
+  if (all(out)) 
+    return(if (is.null(msg)) TRUE else msg)
+  if (countEQ) {
+    N <- length(out)
+    sabst0 <- sum(abs(target[out]))
+  } else {
+    sabst0 <- 0
+  }
+  target <- target[!out]
+  current <- current[!out]
+  if (!countEQ) 
+    N <- length(target)
+  if (is.integer(target) && is.integer(current)) 
+    target <- as.double(target)
+  xy <- sum(abs(target - current))/N
+  what <- if (is.null(scale)) {
+            xn <- (sabst0 + sum(abs(target)))/N
+            if (is.finite(xn) && xn > tolerance) {
+              xy <- xy/xn
+              "relative"
+            } else {
+              "absolute"
+            }
+          } else {
+            stopifnot(all(scale > 0))
+            xy <- xy/scale
+            if (all(abs(scale - 1) < 1e-07)) 
+              "absolute"
+            else "scaled"
+          }
+  if (cplx) 
+    what <- paste(what, "Mod")
+  if (is.na(xy) || xy > tolerance) 
+    msg <- c(msg, paste("Mean", what, "difference:", formatFUN(xy, what)))
+  if (is.null(msg)) {
+    TRUE
+  } else msg
+}

@@ -170,7 +170,7 @@ export(
 ,"cumsum.integer64"
 ,"cumprod.integer64"
 
-
+,"all.equal.integer64"
 
 # -- sort64.R - sorting --
 , sort.integer64
@@ -448,6 +448,7 @@ S3method("cummax", integer64)
 S3method("cumsum", integer64)
 S3method("cumprod", integer64)
 
+S3method("all.equal", integer64)
 
 # -- sort64.R - sorting --
 
@@ -549,4 +550,3 @@ S3method("quantile", integer64)
 S3method("median", integer64)
 S3method("mean", integer64)
 S3method("summary", integer64)
-
