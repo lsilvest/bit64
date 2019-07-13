@@ -109,7 +109,7 @@ export(
 ,"print.integer64"
 ,"format.integer64"
 ,"is.vector.integer64"
-# as.vector.integer64 removed as requested by the CRAN maintainer ,"as.vector.integer64"
+,"as.vector.integer64"
 ,"is.na.integer64"
 ,"is.nan.integer64"
 ,"is.finite.integer64"
@@ -170,7 +170,7 @@ export(
 ,"cumsum.integer64"
 ,"cumprod.integer64"
 
-
+,"all.equal.integer64"
 
 # -- sort64.R - sorting --
 , sort.integer64
@@ -386,7 +386,7 @@ S3method("str", integer64)
 S3method("print", integer64)
 S3method("format", integer64)
 S3method("is.vector", integer64)
-# as.vector.integer64 removed as requested by the CRAN maintainer S3method("as.vector", integer64)
+S3method("as.vector", integer64)
 S3method("is.na", integer64)
 S3method("is.nan", integer64)
 S3method("is.finite", integer64)
@@ -448,6 +448,7 @@ S3method("cummax", integer64)
 S3method("cumsum", integer64)
 S3method("cumprod", integer64)
 
+S3method("all.equal", integer64)
 
 # -- sort64.R - sorting --
 

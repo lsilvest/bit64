@@ -300,6 +300,7 @@
 #!    \code{\link{quantile.integer64}} \tab \code{\link{quantile}} \tab (existing) values at specified percentiles (/s/o/so) \cr
 #!    \code{\link{median.integer64}} \tab \code{\link{median}} \tab (existing) value at percentile 0.5 (/s/o/so) \cr
 #!    \code{\link{summary.integer64}} \tab \code{\link{summary}} \tab  (/s/o/so) \cr
+#!    \code{\link{all.equal.integer64}} \tab \code{\link{all.equal}} \tab test if two objects are (nearly) equal (/s/o/so) \cr
 #!  \cr
 #!    \bold{helper functions} \tab \bold{see also}          \tab \bold{description} \cr
 #!    \code{\link{minusclass}} \tab \code{\link{minusclass}} \tab removing class attritbute \cr
@@ -1516,6 +1517,35 @@
 #! }
 
 
+#! \name{all.equal.integer64}
+#! \alias{all.equal.integer64}
+#! \title{
+#!    Test if two integer64 vectors
+#! }
+#! \description{
+#!   'all.equals(x,y ) is a utility to ompare integer64 objects 'x' and 'y' testing equality.
+#! }
+#! \usage{
+#! \method{all.equal}{integer64}(target, current)
+#! }
+#! \arguments{
+#!   \item{target}{ a vector of 'integer64' to be compared }
+#!   \item{current}{ a vector of 'integer64' to be compared against 'target' }
+#!   \item{\dots}{ further arguments }
+#! }
+#! \value{
+#!   Either ‘TRUE’ (‘NULL’ for ‘attr.all.equal’) or a vector of ‘mode’
+#!   ‘"character"’ describing the differences between ‘target’ and
+#!   ‘current’.
+#! }
+#! \author{
+#! Jens Oehlschlägel <Jens.Oehlschlaegel@truecluster.com>
+#! }
+#! \examples{
+#!   all.equal(as.integer64(1:10), as.integer64(0:9))
+#! }
+
+
 # if (!exists(":.default")){
 	# ":.default" <- get(":")
 	# ":" <- function(from,to)UseMethod(":")
@@ -2472,3 +2502,20 @@ is.vector.integer64 <- function(x, mode="any"){
     TRUE
 }
 
+as.vector.integer64 <- function(x, mode="any"){
+  if (mode=="any"){
+    as.integer64(x)
+  }else if (mode=="integer"){
+    as.integer(x)
+  }else if (mode=="character"){
+    as.character(x)
+  }else if (mode=="double" | mode=="numeric"){
+    as.double(x)
+  }else{
+    stop("invalid 'mode' argument")
+  }
+}
+
+all.equal.integer64  <- function(target, current, ...){
+  NextMethod()
+}
